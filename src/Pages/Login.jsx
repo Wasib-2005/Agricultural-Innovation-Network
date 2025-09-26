@@ -7,6 +7,7 @@ import { googleProvider } from "../LoginLogic/SingInWithProvider/googleProvider"
 import { verifyUserInMongo } from "../LoginLogic/verifyUserInMongo";
 import { useNavigate } from "react-router-dom";
 import { UserContext } from "../Contexts/UserContext";
+import { Bounce, ToastContainer } from "react-toastify";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -24,9 +25,8 @@ const Login = () => {
       const exists = await verifyUserInMongo(userData.email);
       if (!exists) {
         navigate("/create_user_form");
-      }
-      else{
-        navigate("/")
+      } else {
+        navigate("/");
       }
     };
     checkUser();
@@ -69,6 +69,19 @@ const Login = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-lime-100 to-lime-300 p-2">
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick={false}
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+        transition={Bounce}
+      />
       <form onSubmit={handleFormSubmit} className="w-full max-w-md mx-auto">
         <motion.div className="bg-white/90 backdrop-blur-sm p-6 rounded-2xl shadow-2xl grid gap-4">
           <motion.div className="flex flex-col items-center gap-2 text-center">

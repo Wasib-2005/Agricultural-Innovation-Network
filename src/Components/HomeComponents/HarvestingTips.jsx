@@ -1,12 +1,22 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
 import { motion } from "framer-motion";
 
 const HarvestingTips = () => {
-  const tips = [
-    { area: "North Field", tip: "Harvest early morning to retain freshness." },
-    { area: "South Zone", tip: "Use sharp tools to avoid crop damage." },
-    { area: "East Plot", tip: "Check soil moisture before harvesting root crops." },
-  ];
+  const [tips, setTips] = useState([]);
+
+  useEffect(() => {
+    // Fetch tips (blogs) from backend API
+    axios
+      .get(`${import.meta.env.VITE_API_URL}/api/blogs?limit=3`) // Assuming you're getting the blog data from this endpoint
+      .then((response) => {
+        const fetchedTips = response.data.slice(0, 3); // Get the first 3 blogs as tips
+        setTips(fetchedTips);
+      })
+      .catch((error) => {
+        console.error("Error fetching blogs:", error);
+      });
+  }, []);
 
   return (
     <motion.div
@@ -33,8 +43,8 @@ const HarvestingTips = () => {
           >
             <div className="w-2 h-2 rounded-full bg-emerald-400 mt-2" />
             <div>
-              <div className="text-sm font-medium text-white">{t.area}</div>
-              <div className="text-xs text-slate-300">{t.tip}</div>
+              <div className="text-sm font-medium text-white">{t.title}</div>
+              <div className="text-xs text-slate-300">{t.fullDesc}</div>
             </div>
           </motion.div>
         ))}

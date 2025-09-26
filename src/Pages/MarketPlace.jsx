@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { motion, AnimatePresence } from "framer-motion";
 import MarketCard from "../Components/MarketComponents/MarketCard";
+import Cart from "../Components/MarketComponents/Cart";
 
 function MarketPlace() {
   const [data, setData] = useState({});
@@ -182,6 +183,8 @@ function MarketPlace() {
           </>
         )}
       </div>
+      <Cart />
+
     </div>
   );
 }

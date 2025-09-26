@@ -37,7 +37,8 @@ const Navbar = () => {
     { path: "/", label: "Home" },
     { path: "/product-list", label: "Marketplace" },
     { path: "/blogs", label: "Blogs" },
-    { path: "/diary", label: "Farm Diary" },
+    { path: "/calculator", label: "Farm Calculator" },
+    { path: "/add", label: "Add Goods" },
   ];
 
   const getInitials = () => {
@@ -53,15 +54,11 @@ const Navbar = () => {
   };
 
   return (
-    <div className="bg-[#8FA31E] w-full h-[80px] lg:h-[100px] 2xl:max-w-[2000px] mx-auto flex items-center px-4 shadow-lg shadow-[#556B2F]/50 sticky top-0 z-[100]">
+    <div className="bg-[#8FA31E] w-full h-[80px] lg:h-[100px] mx-auto flex items-center px-4 shadow-lg shadow-[#556B2F]/50 sticky top-0 z-[100]">
       {/* Logo + Title */}
       <NavLink to="/" onClick={() => setIsOpen(false)}>
         <div className="logo-container flex items-center cursor-pointer text-white font-bold text-xl lg:text-2xl">
-          <img
-            src="../public/ain-logo-01.png"
-            alt="Logo"
-            width={60}
-          />
+          <img src="../public/ain-logo-01.png" alt="Logo" width={60} />
           <p className="transition-transform duration-300 hover:scale-105">
             Harvesting Friend
           </p>
@@ -130,7 +127,7 @@ const Navbar = () => {
                   className="block px-4 py-2 hover:bg-lime-50 hover:text-black"
                   onClick={() => setAvatarMenuOpen(false)}
                 >
-                  Dashboad
+                  Dashboard
                 </NavLink>
                 <button
                   onClick={() => {
@@ -203,26 +200,25 @@ const Navbar = () => {
             animate="visible"
             exit="exit"
             variants={menuVariants}
-            className="absolute top-[80px] right-4 w-[220px] bg-[#8FA31E] flex flex-col items-center py-4 space-y-3 lg:hidden shadow-lg shadow-[#556B2F]/50 rounded-md z-50"
+            className="absolute top-[80px] right-0 w-[220px] bg-[#8FA31E] flex flex-col items-start py-4 space-y-3 lg:hidden shadow-lg shadow-[#556B2F]/50 rounded-md z-50 px-4 text-left"
           >
+            {/* User Info for Mobile */}
+            {userData && (
+              <div className="w-full border-b border-lime-300 pb-3 mb-2">
+                <p className="font-bold text-white text-left">{userData.displayName || "User"}</p>
+                <p className="text-sm text-white text-left">{userData.email || "No Email"}</p>
+              </div>
+            )}
+
+            {/* Navigation Links */}
             {links.map((link) => (
-              <motion.div
-                key={link.path}
-                variants={itemVariants}
-                className="w-full flex justify-center"
-              >
+              <motion.div key={link.path} variants={itemVariants} className="w-full">
                 <NavLink
                   to={link.path}
-                  onClick={() => {
-                    setTimeout(() => {
-                      setIsOpen(false);
-                    }, 500);
-                  }}
+                  onClick={() => setIsOpen(false)}
                   className={({ isActive }) =>
-                    `${linkClasses} w-full text-center px-3 py-2 rounded-md ${
-                      isActive
-                        ? activeClasses
-                        : "text-white hover:text-[#2F4F1F]"
+                    `${linkClasses} w-full text-left px-3 py-2 rounded-md ${
+                      isActive ? activeClasses : "text-white hover:text-[#2F4F1F]"
                     }`
                   }
                 >
@@ -231,18 +227,51 @@ const Navbar = () => {
               </motion.div>
             ))}
 
-            {!userData ? (
-              <motion.div
-                variants={itemVariants}
-                className="w-full flex justify-center"
-              >
-                <NavLink to="/login" className="w-full text-center">
-                  <button className="bg-[#556B2F] text-white font-bold px-4 py-2 rounded transition duration-200 hover:bg-[#6B8E23] hover:scale-105 w-[90%]">
+            {/* Profile, Dashboard, Sign Out Links */}
+            {userData && (
+              <>
+                <motion.div variants={itemVariants} className="w-full">
+                  <NavLink
+                    to="/profile"
+                    className="block w-full text-left px-3 py-2 hover:bg-lime-50 hover:text-black rounded"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    Profile
+                  </NavLink>
+                </motion.div>
+                <motion.div variants={itemVariants} className="w-full">
+                  <NavLink
+                    to="/dashboad"
+                    className="block w-full text-left px-3 py-2 hover:bg-lime-50 hover:text-black rounded"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    Dashboard
+                  </NavLink>
+                </motion.div>
+                <motion.div variants={itemVariants} className="w-full">
+                  <button
+                    onClick={() => {
+                      longOut();
+                      setIsOpen(false);
+                    }}
+                    className="w-full text-left px-3 py-2 hover:bg-lime-50 hover:text-black rounded"
+                  >
+                    Sign Out
+                  </button>
+                </motion.div>
+              </>
+            )}
+
+            {/* Login Button */}
+            {!userData && (
+              <motion.div variants={itemVariants} className="w-full flex justify-start">
+                <NavLink to="/login" className="w-full text-left">
+                  <button className="bg-[#556B2F] text-white font-bold px-4 py-2 rounded transition duration-200 hover:bg-[#6B8E23] hover:scale-105 w-full text-left">
                     Log In
                   </button>
                 </NavLink>
               </motion.div>
-            ) : null}
+            )}
           </motion.div>
         )}
       </AnimatePresence>

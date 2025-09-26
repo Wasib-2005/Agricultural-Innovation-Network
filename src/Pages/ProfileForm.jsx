@@ -1,73 +1,43 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import { UserContext } from "../Contexts/UserContext";
 import { useNavigate } from "react-router";
 
 function ProfileForm() {
   const navigate = useNavigate();
-  const [category, setCategory] = useState("");
-  const [errors, setErrors] = useState({});
   const { userData } = useContext(UserContext);
 
-  const [farmer, setFarmer] = useState({
-    name: userData?.displayName || "",
-    email: userData?.email || "",
-    age: "",
-    gender: "",
-    phone: "",
-    region: "",
-    farmSize: "",
-    crops: "",
-  });
+  const [category, setCategory] = useState(userData?.role || "");
+  const [errors, setErrors] = useState({});
+  const [formFields, setFormFields] = useState({});
+  
+  const categoryFields = {
+    Farmer: ["name", "email", "age", "gender", "phone", "region", "farmSize", "crops"],
+    Officer: ["name", "email", "age", "gender", "phone", "department", "position", "experience", "region", "degree", "institution"],
+    Consumer: ["name", "email", "age", "gender", "phone", "address", "preferences"]
+  };
 
-  const [officer, setOfficer] = useState({
-    name: userData?.displayName || "",
-    email: userData?.email || "",
-    age: "",
-    gender: "",
-    phone: "",
-    department: "",
-    position: "",
-    experience: "",
-    region: "",
-    degree: "",
-    institution: "",
-  });
+  useEffect(() => {
+    if (category) {
+      const fields = {};
+      categoryFields[category].forEach(field => {
+        fields[field] = userData?.[field] || "";
+      });
+      setFormFields(fields);
+    }
+  }, [category, userData]);
 
-  const [consumer, setConsumer] = useState({
-    name: userData?.displayName || "",
-    email: userData?.email || "",
-    age: "",
-    gender: "",
-    phone: "",
-    address: "",
-    preferences: "",
-  });
-
-  const handleChange = (e, type) => {
+  const handleChange = (e) => {
     const { name, value } = e.target;
-    if (type === "farmer") setFarmer({ ...farmer, [name]: value });
-    if (type === "officer") setOfficer({ ...officer, [name]: value });
-    if (type === "consumer") setConsumer({ ...consumer, [name]: value });
+    setFormFields({ ...formFields, [name]: value });
   };
 
   const validateForm = () => {
     let tempErrors = {};
-    let fields = [];
-    if (category === "Farmer") fields = Object.keys(farmer);
-    if (category === "Officer") fields = Object.keys(officer);
-    if (category === "Consumer") fields = Object.keys(consumer);
-
-    fields.forEach((field) => {
-      let value =
-        category === "Farmer"
-          ? farmer[field]
-          : category === "Officer"
-          ? officer[field]
-          : consumer[field];
-      if (!value || value.toString().trim() === "")
+    Object.keys(formFields).forEach(field => {
+      if (!formFields[field] || formFields[field].toString().trim() === "") {
         tempErrors[field] = "This field is required";
+      }
     });
-
     setErrors(tempErrors);
     return Object.keys(tempErrors).length === 0;
   };
@@ -76,12 +46,7 @@ function ProfileForm() {
     e.preventDefault();
     if (!validateForm()) return;
 
-    let userDataPayload =
-      category === "Farmer"
-        ? { ...farmer, role: "farmer" }
-        : category === "Officer"
-        ? { ...officer, role: "officer" }
-        : { ...consumer, role: "consumer" };
+    const userDataPayload = { ...formFields, role: category };
 
     try {
       const res = await fetch(`${import.meta.env.VITE_API_URL}/create_user`, {
@@ -99,10 +64,11 @@ function ProfileForm() {
     }
   };
 
-  const renderGenderSelect = (value, onChange) => (
+  const renderGenderSelect = () => (
     <select
-      value={value || ""}
-      onChange={onChange}
+      name="gender"
+      value={formFields.gender || ""}
+      onChange={handleChange}
       className="w-full p-3 border border-gray-300 rounded-lg text-gray-800"
     >
       <option value="">Select Gender</option>
@@ -112,24 +78,19 @@ function ProfileForm() {
     </select>
   );
 
-  const renderField = (field, type, value) => (
+  const renderField = (field) => (
     <div key={field}>
       <label className="block mb-1 font-semibold text-lime-700">
         {field.charAt(0).toUpperCase() + field.slice(1)}
       </label>
       {field === "gender" ? (
-        renderGenderSelect(value, (e) =>
-          handleChange(
-            { target: { name: "gender", value: e.target.value } },
-            type
-          )
-        )
+        renderGenderSelect()
       ) : (
         <input
           type={field === "age" ? "number" : "text"}
           name={field}
-          value={value || ""}
-          onChange={(e) => handleChange(e, type)}
+          value={formFields[field] || ""}
+          onChange={handleChange}
           className={`w-full p-3 border ${
             errors[field] ? "border-red-600" : "border-gray-300"
           } rounded-lg text-gray-800`}
@@ -164,55 +125,25 @@ function ProfileForm() {
           </select>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {category === "Farmer" && (
+        {category && (
+          <form onSubmit={handleSubmit} className="space-y-6">
             <div className="p-4 bg-lime-50 rounded-xl shadow space-y-4">
               <h2 className="text-xl font-bold text-lime-700 mb-4">
-                Farmer Info
+                {category} Info
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {Object.keys(farmer).map((field) =>
-                  renderField(field, "farmer", farmer[field])
-                )}
+                {categoryFields[category].map((field) => renderField(field))}
               </div>
             </div>
-          )}
 
-          {category === "Officer" && (
-            <div className="p-4 bg-lime-50 rounded-xl shadow space-y-4">
-              <h2 className="text-xl font-bold text-lime-700 mb-4">
-                Officer Info
-              </h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {Object.keys(officer).map((field) =>
-                  renderField(field, "officer", officer[field])
-                )}
-              </div>
-            </div>
-          )}
-
-          {category === "Consumer" && (
-            <div className="p-4 bg-lime-50 rounded-xl shadow space-y-4">
-              <h2 className="text-xl font-bold text-lime-700 mb-4">
-                Consumer Info
-              </h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {Object.keys(consumer).map((field) =>
-                  renderField(field, "consumer", consumer[field])
-                )}
-              </div>
-            </div>
-          )}
-
-          {category && (
             <button
               type="submit"
               className="w-full py-3 rounded-lg bg-lime-600 text-white font-semibold hover:bg-lime-700 transition"
             >
               Submit
             </button>
-          )}
-        </form>
+          </form>
+        )}
       </div>
     </div>
   );

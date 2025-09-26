@@ -1,11 +1,20 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { Leaf, Facebook, Twitter, Instagram } from "lucide-react";
+import { Link, NavLink } from "react-router-dom";
 
 const footerAnimation = {
   hidden: { opacity: 0, y: 30 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.6 } },
 };
+
+const links = [
+  { path: "/", label: "Home" },
+  { path: "/product-list", label: "Marketplace" },
+  { path: "/blogs", label: "Blogs" },
+  { path: "/calculator", label: "Farm Calculator" },
+  { path: "/add", label: "Add Goods" },
+];
 
 const Footer = () => {
   return (
@@ -34,11 +43,16 @@ const Footer = () => {
         <div>
           <h3 className="text-sm font-semibold mb-2">Quick Links</h3>
           <ul className="space-y-1 text-sm text-slate-300">
-            <li><a href="#weather" className="hover:text-white">Weather Report</a></li>
-            <li><a href="#soil" className="hover:text-white">Soil Report</a></li>
-            <li><a href="#crops" className="hover:text-white">Crop Suggestions</a></li>
-            <li><a href="#market" className="hover:text-white">Marketplace</a></li>
-            <li><a href="#diary" className="hover:text-white">Farming Diary</a></li>
+            {links.map((link) => (
+              <li key={link.path}>
+                <NavLink
+                  to={link.path}
+                  className="hover:text-white transition-colors"
+                >
+                  {link.label}
+                </NavLink>
+              </li>
+            ))}
           </ul>
         </div>
 
@@ -50,16 +64,26 @@ const Footer = () => {
             Email: support@agriconnect.com
           </p>
           <div className="flex gap-3 mt-3">
-            <a href="#" className="hover:text-emerald-400"><Facebook className="w-5 h-5" /></a>
-            <a href="#" className="hover:text-emerald-400"><Twitter className="w-5 h-5" /></a>
-            <a href="#" className="hover:text-emerald-400"><Instagram className="w-5 h-5" /></a>
+            <a href="#" className="hover:text-emerald-400">
+              <Facebook className="w-5 h-5" />
+            </a>
+            <a href="#" className="hover:text-emerald-400">
+              <Twitter className="w-5 h-5" />
+            </a>
+            <a href="#" className="hover:text-emerald-400">
+              <Instagram className="w-5 h-5" />
+            </a>
           </div>
         </div>
       </div>
 
       {/* Bottom Section */}
-      <div className="border-t border-slate-700 mt-6 pt-3 text-center text-xs text-slate-400">
-        © {new Date().getFullYear()} AgriConnect. All rights reserved.
+      <div className="border-t border-slate-700 mt-6 pt-3 text-center text-[15px] text-slate-400">
+        <p>© 2025 Harvesting Friend. All rights reserved.</p>
+        <Link
+        to={"/our_team"} className="text-[14px] text-white">
+          Develop By <span className="hover:text-blue-500">ZoroOneCorporation</span>
+        </Link>
       </div>
     </motion.footer>
   );

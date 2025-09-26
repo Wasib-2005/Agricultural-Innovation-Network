@@ -9,6 +9,13 @@ import MarketPlace from "../Pages/MarketPlace";
 import Product from "../Components/MarketComponents/Product";
 import UserContextProvider from "../Contexts/UserContextProvider";
 import ProfileForm from "../Pages/ProfileForm";
+import Checkout from "../Pages/Checkout";
+import BlogPage from "../Pages/BlogPage";
+import Profile from "../Pages/Profile";
+import Dashboard from "../Pages/Dashboard";
+import AddGoods from "../Pages/AddGoods";
+import OurTeam from "../Pages/OurTeam";
+
 const Mrouter = createBrowserRouter([
   {
     path: "/",
@@ -30,9 +37,17 @@ const Mrouter = createBrowserRouter([
         path: "/product/:productID",
         element: <Product />,
       },
+      { path: "/blogs", element: <BlogPage /> },
+      { path: "/checkout", element: <Checkout /> },
       {
-        path: "/diary",
+        path: "/calculator",
         element: <Diary />,
+      },
+      { path: "/profile", element: <Profile /> },
+      { path: "/add", element: <AddGoods /> },
+      {
+        path: "/dashboad",
+        element: <Dashboard />,
       },
     ],
   },
@@ -43,6 +58,10 @@ const Mrouter = createBrowserRouter([
   {
     path: "/create_user_form",
     element: <ProfileForm />,
+  },
+  {
+    path: "/our_team",
+    element: <OurTeam />,
   },
 ]);
 

@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Droplet, Beaker, MapPin, Navigation, Wind } from "lucide-react";
 import { useSelector } from "react-redux";
-import { motion } from "framer-motion";
 
 const SoilReport = ({ location }) => {
   const weatherData = useSelector((state) => state.weather.data);
@@ -18,8 +17,8 @@ const SoilReport = ({ location }) => {
   });
 
   const place = location || {
-    village: "Munshiganj",
-    district: "Dhaka",
+    village: weatherData?.name || "Unknown",
+    district: weatherData?.sys?.country || "Unknown",
     coordinates: lat && lon ? `${lat.toFixed(3)}°N, ${lon.toFixed(3)}°E` : "-",
   };
 
@@ -54,98 +53,51 @@ const SoilReport = ({ location }) => {
     return soil.type;
   };
 
-  const containerVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { staggerChildren: 0.1, duration: 0.6 },
-    },
-  };
-
-  const itemVariants = {
-    hidden: { opacity: 0, y: 10 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.4 } },
-  };
-
   return (
-    <motion.div
-      variants={containerVariants}
-      initial="hidden"
-      animate="visible"
-      className="w-[95%] max-w-[2000px] mx-auto mt-5 lg:mt-8 rounded-3xl p-4 lg:p-6 bg-gradient-to-r from-emerald-700/50 to-emerald-600/20"
-    >
+    <div className="w-[95%] max-w-[2000px] mx-auto mt-5 lg:mt-8 rounded-3xl p-4 lg:p-6 bg-gradient-to-r from-emerald-700/50 to-emerald-600/20">
       {/* Title */}
-      <motion.h2
-        variants={itemVariants}
-        className="text-lg sm:text-xl font-semibold text-slate-200 mb-4 text-center"
-      >
+      <h2 className="text-lg sm:text-xl font-semibold text-slate-200 mb-4 text-center">
         Soil & Weather Report
-      </motion.h2>
+      </h2>
 
       {/* Soil Recommendation */}
-      <motion.div
-        variants={itemVariants}
-        className="text-center text-white text-lg sm:text-2xl font-bold mb-6"
-      >
+      <div className="text-center text-white text-lg sm:text-2xl font-bold mb-6">
         {recommendedSoil()}
-      </motion.div>
+      </div>
 
       {/* Soil & Weather Stats */}
-      <motion.div
-        variants={itemVariants}
-        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-sm sm:text-base text-slate-300"
-      >
-        <motion.div
-          variants={itemVariants}
-          className="flex items-center gap-2 bg-emerald-800/40 p-2 rounded-xl"
-        >
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-sm sm:text-base text-slate-300">
+        <div className="flex items-center gap-2 bg-emerald-800/40 p-2 rounded-xl">
           <Beaker className="w-5 h-5 text-amber-300" />
           <span>pH: {soil.ph}</span>
-        </motion.div>
-
-        <motion.div
-          variants={itemVariants}
-          className="flex items-center gap-2 bg-emerald-800/40 p-2 rounded-xl"
-        >
+        </div>
+        <div className="flex items-center gap-2 bg-emerald-800/40 p-2 rounded-xl">
           <Droplet className="w-5 h-5 text-sky-400" />
           <span>Moisture: {soil.moisture}</span>
-        </motion.div>
-
-        <motion.div
-          variants={itemVariants}
-          className="flex items-center gap-2 bg-emerald-800/40 p-2 rounded-xl"
-        >
+        </div>
+        <div className="flex items-center gap-2 bg-emerald-800/40 p-2 rounded-xl">
           <Navigation className="w-5 h-5 text-blue-300" />
           <span>
             Sea Level: {weatherData?.main?.sea_level ? `${weatherData.main.sea_level} hPa` : "-"}
           </span>
-        </motion.div>
-
-        <motion.div
-          variants={itemVariants}
-          className="flex items-center gap-2 bg-emerald-800/40 p-2 rounded-xl"
-        >
+        </div>
+        <div className="flex items-center gap-2 bg-emerald-800/40 p-2 rounded-xl">
           <Wind className="w-5 h-5 text-purple-300" />
           <span>Wind: {weatherData?.wind?.speed ? `${weatherData.wind.speed} m/s` : "-"}</span>
-        </motion.div>
-
-        <motion.div
-          variants={itemVariants}
-          className="flex items-center gap-2 bg-emerald-800/40 p-2 rounded-xl col-span-1 sm:col-span-2 lg:col-span-4"
-        >
+        </div>
+        <div className="flex items-center gap-2 bg-emerald-800/40 p-2 rounded-xl col-span-1 sm:col-span-2 lg:col-span-4">
           <MapPin className="w-5 h-5 text-red-400" />
           <span>
             {place.village && place.district
               ? `${place.village}, ${place.district}`
               : "Location Unknown"}
           </span>
-        </motion.div>
-      </motion.div>
+        </div>
+      </div>
 
       {/* Weather Details */}
       {weatherData && !weatherLoading && (
-        <motion.div variants={itemVariants} className="mt-6 text-slate-200 text-sm sm:text-base">
+        <div className="mt-6 text-slate-200 text-sm sm:text-base">
           <h3 className="font-semibold mb-2">Current Weather:</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 text-slate-300">
             <div>Temperature: {weatherData.main?.temp}°C</div>
@@ -155,9 +107,9 @@ const SoilReport = ({ location }) => {
             <div>Wind Speed: {weatherData.wind?.speed} m/s</div>
             <div>Sea Level: {weatherData.main?.sea_level ? `${weatherData.main.sea_level} hPa` : "-"}</div>
           </div>
-        </motion.div>
+        </div>
       )}
-    </motion.div>
+    </div>
   );
 };
 
