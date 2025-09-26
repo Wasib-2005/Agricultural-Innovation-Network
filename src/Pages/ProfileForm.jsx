@@ -1,13 +1,16 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
+import { UserContext } from "../Contexts/UserContext";
+import { useNavigate } from "react-router";
 
 function ProfileForm() {
+  const navigate = useNavigate();
   const [category, setCategory] = useState("");
-  const [avatar, setAvatar] = useState(null);
   const [errors, setErrors] = useState({});
+  const { userData } = useContext(UserContext);
 
   const [farmer, setFarmer] = useState({
-    name: "",
-    email: "",
+    name: userData?.displayName || "",
+    email: userData?.email || "",
     age: "",
     gender: "",
     phone: "",
@@ -17,11 +20,11 @@ function ProfileForm() {
   });
 
   const [officer, setOfficer] = useState({
-    name: "",
+    name: userData?.displayName || "",
+    email: userData?.email || "",
     age: "",
     gender: "",
     phone: "",
-    email: "",
     department: "",
     position: "",
     experience: "",
@@ -31,19 +34,14 @@ function ProfileForm() {
   });
 
   const [consumer, setConsumer] = useState({
-    name: "",
+    name: userData?.displayName || "",
+    email: userData?.email || "",
     age: "",
     gender: "",
     phone: "",
-    email: "",
     address: "",
     preferences: "",
   });
-
-  const handleAvatarChange = (e) => {
-    const file = e.target.files[0];
-    if (file) setAvatar(URL.createObjectURL(file));
-  };
 
   const handleChange = (e, type) => {
     const { name, value } = e.target;
@@ -55,20 +53,19 @@ function ProfileForm() {
   const validateForm = () => {
     let tempErrors = {};
     let fields = [];
-
     if (category === "Farmer") fields = Object.keys(farmer);
     if (category === "Officer") fields = Object.keys(officer);
     if (category === "Consumer") fields = Object.keys(consumer);
 
     fields.forEach((field) => {
-      let value;
-      if (category === "Farmer") value = farmer[field];
-      if (category === "Officer") value = officer[field];
-      if (category === "Consumer") value = consumer[field];
-
-      if (!value || value.toString().trim() === "") {
+      let value =
+        category === "Farmer"
+          ? farmer[field]
+          : category === "Officer"
+          ? officer[field]
+          : consumer[field];
+      if (!value || value.toString().trim() === "")
         tempErrors[field] = "This field is required";
-      }
     });
 
     setErrors(tempErrors);
@@ -79,35 +76,23 @@ function ProfileForm() {
     e.preventDefault();
     if (!validateForm()) return;
 
-    let userData = {};
-    if (category === "Farmer") {
-      userData = { ...farmer, role: "farmer" };
-    } else if (category === "Officer") {
-      userData = { ...officer, role: "officer" };
-    } else if (category === "Consumer") {
-      userData = { ...consumer, role: "consumer" };
-    }
+    let userDataPayload =
+      category === "Farmer"
+        ? { ...farmer, role: "farmer" }
+        : category === "Officer"
+        ? { ...officer, role: "officer" }
+        : { ...consumer, role: "consumer" };
 
     try {
-      const res = await fetch("http://localhost:5000/create_user", {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/create_user`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: userData.name,
-          email: userData.email,
-          role: userData.role,
-        }),
+        body: JSON.stringify(userDataPayload),
       });
-
       const data = await res.json();
-
-      if (res.status === 201) {
-        alert("User created successfully!");
-      } else if (res.status === 409) {
-        alert("Email already exists!");
-      } else {
-        alert(data.message || "Something went wrong");
-      }
+      if (res.status === 201) navigate("/");
+      else if (res.status === 409) alert("Email already exists!");
+      else alert(data.message || "Something went wrong");
     } catch (error) {
       console.error(error);
       alert("Server error");
@@ -116,9 +101,9 @@ function ProfileForm() {
 
   const renderGenderSelect = (value, onChange) => (
     <select
-      value={value}
+      value={value || ""}
       onChange={onChange}
-      className="w-full p-3 border border-gray-300 rounded-lg focus:outline-lime-500 focus:ring-2 focus:ring-lime-400 text-gray-800 bg-white"
+      className="w-full p-3 border border-gray-300 rounded-lg text-gray-800"
     >
       <option value="">Select Gender</option>
       <option value="Male">Male</option>
@@ -141,15 +126,13 @@ function ProfileForm() {
         )
       ) : (
         <input
-          type={
-            field === "age" ? "number" : field === "email" ? "email" : "text"
-          }
+          type={field === "age" ? "number" : "text"}
           name={field}
-          value={value}
+          value={value || ""}
           onChange={(e) => handleChange(e, type)}
-          className={`w-full p-3 border border-gray-300 rounded-lg focus:outline-lime-500 focus:ring-2 focus:ring-lime-400 text-gray-800 bg-white ${
-            errors[field] ? "border-red-600" : ""
-          }`}
+          className={`w-full p-3 border ${
+            errors[field] ? "border-red-600" : "border-gray-300"
+          } rounded-lg text-gray-800`}
         />
       )}
       {errors[field] && (
@@ -160,7 +143,7 @@ function ProfileForm() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-lime-100 to-lime-200 p-4">
-      <div className="w-[90%] max-w-4xl mx-auto mt-6 p-6 bg-gradient-to-br from-lime-50 to-lime-100 rounded-2xl shadow-lg">
+      <div className="w-[90%] max-w-4xl mx-auto p-6 bg-gradient-to-br from-lime-50 to-lime-100 rounded-2xl shadow-lg">
         <h1 className="text-3xl font-extrabold text-lime-800 mb-6 text-center">
           📋 User Profile Form
         </h1>
@@ -172,7 +155,7 @@ function ProfileForm() {
           <select
             value={category}
             onChange={(e) => setCategory(e.target.value)}
-            className="w-full p-3 border border-gray-300 rounded-lg focus:outline-lime-500 focus:ring-2 focus:ring-lime-400 text-gray-800 bg-white"
+            className="w-full p-3 border border-gray-300 rounded-lg text-gray-800"
           >
             <option value="">-- Select --</option>
             <option value="Farmer">Farmer</option>
@@ -180,33 +163,6 @@ function ProfileForm() {
             <option value="Consumer">Consumer</option>
           </select>
         </div>
-
-        {category && (
-          <div className="flex flex-col items-center mb-6">
-            <div className="w-32 h-32 rounded-full border-4 border-lime-400 overflow-hidden shadow-lg mb-2">
-              {avatar ? (
-                <img
-                  src={avatar}
-                  alt="Avatar"
-                  className="w-full h-full object-cover"
-                />
-              ) : (
-                <div className="w-full h-full flex items-center justify-center bg-lime-300 text-lime-700 font-bold">
-                  No Photo
-                </div>
-              )}
-            </div>
-            <label className="cursor-pointer bg-lime-600 text-white px-4 py-2 rounded-lg shadow hover:bg-lime-700 transition">
-              Upload Photo
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handleAvatarChange}
-                className="hidden"
-              />
-            </label>
-          </div>
-        )}
 
         <form onSubmit={handleSubmit} className="space-y-6">
           {category === "Farmer" && (

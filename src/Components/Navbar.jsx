@@ -42,7 +42,7 @@ const Navbar = () => {
 
   const getInitials = () => {
     if (userData?.displayName) {
-      return userData.displayName
+      return userData?.displayName
         .split(" ")
         .map((word) => word[0])
         .join("")
