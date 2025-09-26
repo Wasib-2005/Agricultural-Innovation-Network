@@ -58,7 +58,7 @@ const Navbar = () => {
       {/* Logo + Title */}
       <NavLink to="/" onClick={() => setIsOpen(false)}>
         <div className="logo-container flex items-center cursor-pointer text-white font-bold text-xl lg:text-2xl">
-          <img src="../public/ain-logo-01.png" alt="Logo" width={60} />
+          <img src="/logo.png" alt="Logo" width={60} />
           <p className="transition-transform duration-300 hover:scale-105">
             Harvesting Friend
           </p>

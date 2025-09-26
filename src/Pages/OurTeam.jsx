@@ -7,7 +7,7 @@ function OurTeam() {
       name: "Wasibul Islam Wasib",
       title: "Full Stack Developer",
       photo:
-        "../public/wasib.jpg",
+        "/wasib.jpg",
       email: "wasibulislam8984@gmail.com",
       phone: "+880 1855-005875",
     },
@@ -16,7 +16,7 @@ function OurTeam() {
       name: "Md Shahariar Islam Rafi",
       title: "Full Stack Developer & Researcher",
       photo:
-        "../public/rafi.jpeg",
+        "/rafi.jpeg",
       email: "rafishake6233@gmail.com",
       phone: "+880 1960-470590",
     },
@@ -25,7 +25,7 @@ function OurTeam() {
       name: "Arafat Rahman",
       title: "Frontend Developer & UI/UX Designer",
       photo:
-        "../public/arafat.jpeg",
+        "/arafat.jpeg",
       email: "arafatrahman0092@gmail.com",
       phone: "+880 1701-2722099",
     },
